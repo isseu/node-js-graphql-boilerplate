@@ -1,0 +1,46 @@
+.navbar {
+	background-color: transparent;
+	color: #ffffff;
+	-webkit-box-shadow: 0 0px 0px rgba(0,0,0,0);
+    box-shadow: 0 0px 0px rgba(0,0,0,0);
+}
+.navbar-default .navbar-nav>li>a, .navbar-default .navbar-brand{
+	color: #ffffff;
+}
+.introduction {
+	background: #607d8b;
+	color: #ffffff;
+}
+.introduction-text {
+	color: #ffffff;
+}
+.introduction-text h1 {
+	font-size: 46px;
+}
+.introduction-text p {
+	font-size: 18px;
+	color: #cfd8dc;
+	letter-spacing: 0.6px;
+}
+.banner {
+	padding: 20px;
+	padding-top: 60px;
+	padding-bottom: 60px;
+}
+.footer {
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+.footer p {
+    font-size: 18px;
+    margin-bottom: 0px;
+}
+.footer ul li {
+	font-size: 14px;
+}
+.footer ul li a {
+	color: rgb(102, 102, 102);
+}
+.footer ul li a:hover {
+	text-decoration: underline;
+}
