@@ -1,16 +1,8 @@
 import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
-  GraphQLList,
   GraphQLNonNull
 } from 'graphql';
-import UserType from './user';
-import ProductType from './product';
-import CategoryType from './category';
-import InventoryType from './inventory';
-import db from '../database';
-import { User, Product, Category, Inventory } from '../database';
 
 const ViewerType = new GraphQLObjectType({
   name: 'Viewer',
@@ -30,21 +22,21 @@ const ViewerType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The token of the user',
       resolve: (user) => user.get('token')
-    },
-    inventories: {
-      type: new GraphQLList(InventoryType),
-      resolve: (user, _, context) => user.getInventories(),
-    },
-    product: {
-      type: ProductType,
-      args: { id: { type: GraphQLString } },
-      resolve: (user, { id }, context) => db.getProduct(id, context),
-    },
-    category: {
-      type: CategoryType,
-      args: { id: { type: GraphQLString } },
-      resolve: (user, { id }, context) => db.getCategory(id, context),
     }
+    // inventories: {
+    //   type: new GraphQLList(InventoryType),
+    //   resolve: (user, _, context) => user.getInventories(),
+    // },
+    // product: {
+    //   type: ProductType,
+    //   args: { id: { type: GraphQLString } },
+    //   resolve: (user, { id }, context) => db.getProduct(id, context),
+    // },
+    // category: {
+    //   type: CategoryType,
+    //   args: { id: { type: GraphQLString } },
+    //   resolve: (user, { id }, context) => db.getCategory(id, context),
+    // }
   }),
 });
 

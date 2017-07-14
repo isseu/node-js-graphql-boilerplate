@@ -1,10 +1,6 @@
-/* @flow */
-
 import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
-  GraphQLList,
   GraphQLNonNull
 } from 'graphql';
 
@@ -21,6 +17,11 @@ const UserType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The email of the user',
       resolve: (user) => user.get('email')
+    },
+    token: {
+      type: GraphQLString,
+      description: 'The email of the user',
+      resolve: (user) => user.get('token')
     },
   }),
 });

@@ -1,13 +1,9 @@
 import {
   GraphQLObjectType,
-  GraphQLList,
   GraphQLString,
-  GraphQLInt
 } from 'graphql';
 import ViewerType from './viewer';
-import db from '../database';
-
-import { User, Product, Category, Inventory } from '../database';
+import { User } from '../../models';
 
 /**
  * This is the type that will be the root of our query,
@@ -25,7 +21,7 @@ const QueryType = new GraphQLObjectType({
       resolve: (_, { userId, token }, context) => {
         context = {};
         context.user = User.authByToken(userId, token);
-        console.dir(context.user)
+        console.dir(context.user);
         return context.user ;
       },
     },

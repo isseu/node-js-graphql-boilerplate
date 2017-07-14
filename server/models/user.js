@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 
 module.exports = function(sequelize, Sequelize) {
   var User = sequelize.define('user', {
@@ -12,80 +13,39 @@ module.exports = function(sequelize, Sequelize) {
     },
     passwordHash: {
       type: Sequelize.STRING,
-      allowNull: false,
-      set(plainPassword) {
-        this.setDataValue('passwordHash', this.encryptPassword(plainPassword));
-      }
-    },
-    token: {
-      type: Sequelize.STRING,
-      set(newToken) {
-        this.setDataValue('token', newToken);
-        this.tokenCreatedAt = Date.now();
-      }
-    },
-    tokenCreatedAt: {
-      type: Sequelize.DATE
+      allowNull: false 
     }
-  }, {
-    instanceMethods: {
-      encryptPassword(plain_password) {
-        return crypto.createHash('sha256').update(plain_password).digest('base64');
-      },
-      isTokenOutdated() {
-        var currentDate = new Date();
-        var tokenAge = (currentDate - this.tokenCreatedAt) / 1000;
-        return tokenAge > 3600 && false; // Sacamos por mientras
-      },
-      createToken() {
-        if (!this.token || this.isTokenOutdated()) {
-          this.token = User.generateToken();
-          this.save();
-        }
-        return this.token;
-      },
-    },
-    classMethods: {
-      generateToken() {
-        return crypto.randomBytes(10).toString('hex');
-      },
-      authorization(email, password) {
-        return User.findOne({
-          where: {
-            email: email
-          }
-        }).then((userFound) => {
-          if (!userFound) {
-            return Promise.reject('User not found');
-          } else if (userFound.get('passwordHash') !== userFound.encryptPassword(password)) {
-            return Promise.reject('Incorrect password');
-          } else {
-            userFound.set('token', userFound.createToken());
-            return userFound;
-          }
-        });
-      },
-      authByToken(userId, token) {
-        return User.findOne({
-          where: {
-            id: userId,
-            token: token
-          }
-        }).then((userFound) => {
-          if(!userFound || userFound.isTokenOutdated()) {
-            return Promise.reject("Wrong user, re-login");
-          }
-          return userFound;
-        });
-      },
-      findByToken(token) {
-        return User.findOne({
-          where: {
-            token: token
-          }
-        });
-      },
-    }
+  },
+  {
+    timestamps: true,
   });
+  User.encryptPassword = function(plain_password) {
+    return crypto.createHash('sha256').update(plain_password).digest('base64');
+  };
+  User.authorization = function (email, password) {
+    return User.findOne({
+      where: {
+        email: email
+      }
+    }).then((userFound) => {
+      if (!userFound) {
+        return Promise.reject('User not found');
+      } else if (userFound.get('passwordHash') !== User.encryptPassword(password)) {
+        return Promise.reject('Incorrect password');
+      } else {
+        // if user is found and password is right
+        // create a token
+        var token = jwt.sign({
+          userId: userFound.get('id')
+        }, 'SECRET CAT KEY', {
+          expiresIn: 1440
+        });
+        return {
+          user: userFound,
+          token: token
+        };
+      }
+    });
+  };
   return User;
 };

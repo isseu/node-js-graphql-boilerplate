@@ -1,14 +1,11 @@
 /* @flow */
 import {
   GraphQLObjectType,
-  GraphQLList,
   GraphQLString,
-  GraphQLInt
 } from 'graphql';
 import UserType from './user';
-import db from '../database';
-
-import { User, Product, Category, Inventory } from '../database';
+import SignInPayloadType from './sign_in_payload';
+import { user } from '../../models';
 
 const MutationType = new GraphQLObjectType({
   name: 'Mutation',
@@ -16,13 +13,13 @@ const MutationType = new GraphQLObjectType({
   	createUser: {
       type: UserType,
       args: { email: { type: GraphQLString }, password: { type: GraphQLString } },
-      resolve: (_, { email, password }, context) => db.createUser({ email, password }, context)
+      resolve: (_, { email, password }, context) => user.createUser({ email, password }, context)
     },
     loginUser: {
-      type: UserType,
+      type: SignInPayloadType,
       args: { email: { type: GraphQLString }, password: { type: GraphQLString } },
       resolve: (_, { email, password }, context) => {
-        return User.authorization(email, password);
+        return user.authorization(email, password);
       }
     }
   })

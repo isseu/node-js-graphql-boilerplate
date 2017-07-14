@@ -1,25 +1,37 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
-import passport from "passport";
-import session from "express-session";
-import "./auth.js";
+import jwt from 'jsonwebtoken';
 
 require('dotenv').config();
 
 import graphQLSchema from './graphql';
 
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.SERVER_PORT || 3003;
 var app = express();
 
-app.use(session({
-  secret: process.env.SESSION_SECRET
-}));
+app.use(bodyParser.json());
 
-app.use(passport.initialize());
-app.use(passport.session());
+app.use((req, res, next) => {
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  // decode token
+  if (token) {
+    console.dir(token)
+    // verifies secret and checks exp
+    jwt.verify(token, 'SECRET CAT KEY', (err, decoded) => {      
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, save to request for use in other routes
+        req.decoded = decoded;    
+      }
+    });
+  }
+  next();
+});
 
-app.use('/graphql', bodyParser.json(),
+app.use('/graphql',
   graphqlExpress({
     schema: graphQLSchema
   })

@@ -1,14 +1,16 @@
 'use strict';
 
 module.exports = {
-  up: function (queryInterface) {
-    return queryInterface.bulkInsert('User', [{
-      name: 'John Doe',
-      isBetaMember: false
+  up: function (queryInterface, Sequelize) {
+    return queryInterface.bulkInsert('users', [{
+      email: 'quiquecorreav@gmail.com',
+      passwordHash: "WZRHGrsBESr8wYFZ9sx0tPURuZgG2lmzyvWpwXPKz8U=", // 12345
+      createdAt: new Date(),
+      updatedAt: new Date()
     }]);
   },
 
   down: function (queryInterface) {
-    return queryInterface.bulkDelete('User', null, {});
+    return queryInterface.bulkDelete('users', null, {});
   }
 };
