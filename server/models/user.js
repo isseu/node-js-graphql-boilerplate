@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 module.exports = function(sequelize, Sequelize) {
@@ -19,29 +19,34 @@ module.exports = function(sequelize, Sequelize) {
   {
     timestamps: true,
   });
-  User.encryptPassword = function(plain_password) {
-    return crypto.createHash('sha256').update(plain_password).digest('base64');
+  User.encryptPasswordPromise = function(plain_password) {
+    return bcrypt.hash(plain_password, 10);
   };
   User.authorization = function (email, password) {
+    var user;
     return User.findOne({
-      where: {
-        email: email
-      }
+      where: { email: email }
     }).then((userFound) => {
       if (!userFound) {
         return Promise.reject('User not found');
-      } else if (userFound.get('passwordHash') !== User.encryptPassword(password)) {
+      }
+      user = userFound;
+      console.dir(password);
+      return bcrypt.compare(password, userFound.get('passwordHash'));
+    }).then((res) => {
+      console.dir(res);
+      if (!res) {
         return Promise.reject('Incorrect password');
       } else {
         // if user is found and password is right
         // create a token
         var token = jwt.sign({
-          userId: userFound.get('id')
+          userId: user.get('id')
         }, 'SECRET CAT KEY', {
           expiresIn: 1440
         });
         return {
-          user: userFound,
+          user: user,
           token: token
         };
       }
