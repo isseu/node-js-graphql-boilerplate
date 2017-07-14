@@ -7,6 +7,7 @@
   "license": "ISC",
   "scripts": {
     "start": "nodemon ./ --exec babel-node",
+    "build": "NODE_ENV=production babel --out-dir='output/' --ignore='__tests__/*' ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

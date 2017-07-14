@@ -6,7 +6,7 @@ require('dotenv').config();
 
 import graphQLSchema from './graphql';
 
-const PORT = 3000
+const PORT = 3003;
 var app = express();
 
 app.use('/graphql', bodyParser.json(),
@@ -20,5 +20,5 @@ app.use('/graphiql', graphiqlExpress({
 }));
 
 app.listen(PORT, () => {
-  console.log(`GraphQL server running on port ${PORT}.`)
+  console.log(`GraphQL server running on port ${PORT}.`);
 });
